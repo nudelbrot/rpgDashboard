@@ -54,13 +54,18 @@
             <i class="material-icons">more_vert</i>
           </button>
           <ul class="mdl-menu mdl-js-menu mdl-js-ripple-effect mdl-menu--bottom-right" for="hdrbtn">
-            <li id="addPlaylist" class="mdl-menu__item">Add</li>
+            <li id="addPlaylist" class="mdl-menu__item mdl-menu__item--full-bleed-divider">Add</li>
+            <li id="loadJSON" class="mdl-menu__item">Import</li>
+            <li id="saveJSON" class="mdl-menu__item">Export</li>
           </ul>
         </div>
       </header>
       <main class="mdl-layout__content mdl-color--grey-100">
       <div id="grid" class="mdl-grid ">
       </div>
+      <button id="fightButton" style="position:fixed; bottom: 16px; right: 16px;" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+          <i class="material-icons">security</i>
+      </button>
       </main>
     </div>
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
