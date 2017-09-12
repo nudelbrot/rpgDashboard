@@ -135,11 +135,11 @@ $(function(){
     });
   });
 
-//  $.getJSON("init.json", function(data){
-//    Object.keys(data).forEach(function(a){
-//      addPlaylist(data[a], a);
-//    });
-//  });
+$.getJSON("init.json", function(data){
+  Object.keys(data).forEach(function(a){
+    addPlaylist(data[a], a);
+  });
+});
 
 });
 
