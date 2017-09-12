@@ -112,6 +112,11 @@ class SCPlayer extends Player{
 $(function(){
   player = new Player();
   player.init();
+
+  $("#loadJSON").on("click", function(){player.load()});
+  $("#saveJSON").on("click", function(){player.save()});
+  $("#fightButton").on("click", function(){$("#fightButton").toggleClass("mdl-button--colored");});
+
   $("#addPlaylist").on("click", function(){
     var input = '<div>'
       +'<div class="mdl-textfield mdl-js-textfield"><input id="link" class="mdl-textfield__input" type="text"> <label class="mdl-textfield__label" for="link">Content</label></div>'
