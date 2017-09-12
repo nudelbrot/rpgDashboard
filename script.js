@@ -1,14 +1,25 @@
 class Player{
   constructor(){
     this.data = {};
+    this.shuffle = true;
+    this.fightPlaylist = '<iframe width="100%" height="300" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/75404410&amp;color=%23ff5500&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;visual=true"></iframe>';
     this.active = undefined;
+    this.fightID = undefined;
+    this.previous = undefined;
   }
   init(){
-        this.scplayer = new SCPlayer();
+    this.scplayer = new SCPlayer();
+    this.fightID = this.register(this.fightPlaylist, "fight", this.scplayer);
+    var obj = $("<div></div>");
+    obj.append(this.fightPlaylist);
+    $("body").append(obj);
+    obj.hide();
+    this.data[this.fightID].object = obj.find("iframe");
+    this.data[this.fightID].button = $("#fightButton");
   }
   register(data, name, player){
     var key = Object.keys(this.data).length;
-    this.data[key] = {"key": key, "data": data, "name": name, "object": undefined, "player": player};
+    this.data[key] = {"key": key, "data": data, "name": name, "object": undefined, "player": player, "button": undefined};
     return key;
   }
 
@@ -16,22 +27,50 @@ class Player{
     return player.data[index];
   }
 
+  setSettings(settings){
+    console.debug(settings);
+  }
+
   play(id){
-    if(this.data[id]){
-      this.active = id;
-      this.data[id].player.play(id);
+    if(id != undefined && this.data[id]){
+      if(this.active == this.fightID){
+        this.pause(this.fightID);
+        this.pause(this.previous);
+        return;
+      }
+      if(this.active == id){
+        this.pause(id);
+      }else{
+        this.data[id].button.addClass("mdl-button--accent");
+        this.pause(this.active);
+        this.active = id;
+        this.data[id].player.play(id);
+      }
     }
-
   }
-  pause(id){
-    if(this.data[id]){
-      this.data[id].player.pause(id);
+
+  pause(id, reset=true){
+    if(id != undefined && this.data[id]){
+      this.data[id].button.removeClass("mdl-button--accent");
+      if(id != this.fightID){
+        this.previous = this.active;
+      }
+      if(this.active == id){
+        this.active = undefined;
+      }
+      this.data[id].player.pause(id, reset);
     }
   }
 
-  toggle(id){
-    if(this.data[id]){
-      this.data[id].player.toggle(id);
+  fight(){
+    if(this.fightID != this.active){
+      this.pause(this.active, false);
+      this.play(this.fightID);
+      this.data[this.fightID].button.addClass("mdl-button--colored");
+    }else{
+      this.pause(this.fightID);
+      this.play(this.previous);
+      this.data[this.fightID].button.removeClass("mdl-button--colored");
     }
   }
 
@@ -46,7 +85,7 @@ class Player{
     a.download = "playlists.json";
     a.click();
   }
-  
+
   load(){
     var finput;
     if (window.File && window.FileReader && window.FileList && window.Blob) {
@@ -90,10 +129,12 @@ class SCPlayer extends Player{
     var widget = SC.Widget(card);
     widget.play();
   }
-  pause(id){
+  pause(id, reset){
     var card = super.getData(id).object[0];
     var widget = SC.Widget(card);
-    widget.seekTo(0);
+    if(reset){
+      widget.seekTo(0);
+    }
     widget.pause();
   }
 
@@ -115,38 +156,62 @@ $(function(){
 
   $("#loadJSON").on("click", function(){player.load()});
   $("#saveJSON").on("click", function(){player.save()});
-  $("#fightButton").on("click", function(){$("#fightButton").toggleClass("mdl-button--colored");});
+  $("#fightButton").on("click", function(){player.fight();});
+  $("#openSettings").on("click", function(){openSettingsDialog();});
+  $("#addPlaylist").on("click", openPlaylistDialog);
 
-  $("#addPlaylist").on("click", function(){
-    var input = '<div>'
-      +'<div class="mdl-textfield mdl-js-textfield"><input id="link" class="mdl-textfield__input" type="text"> <label class="mdl-textfield__label" for="link">Content</label></div>'
-      +'<div class="mdl-textfield mdl-js-textfield"><input id="name" class="mdl-textfield__input" type="text"> <label class="mdl-textfield__label" for="name">Name</label></div>'
-    +'</div>';
-    showDialog({
-      title: 'add Playlist',
-      text: input,
-      negative: {
-        title: 'Cancel'
-      },
-      positive: {
-        title: 'add',
-        onClick: function() {
-          var link = $("#link").val();
-          var name = $("#name").val();
-          addPlaylist(link, name);
-        }
-      },
-      cancelable: false,
+    $.getJSON("init.json", function(data){
+      Object.keys(data).forEach(function(a){
+        addPlaylist(data[a], a);
+      });
     });
-  });
-
-$.getJSON("init.json", function(data){
-  Object.keys(data).forEach(function(a){
-    addPlaylist(data[a], a);
-  });
-});
 
 });
+
+function openSettingsDialog(){
+  var input = '<div>'
+    +'<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="shuffleSwitch"> <input type="checkbox" id="shuffleSwitch" class="mdl-switch__input" checked> <span class="mdl-switch__label">Shuffle</span></label>'
+    +'<div class="mdl-textfield mdl-js-textfield"><input id="fightPlaylist" class="mdl-textfield__input" type="text"> <label class="mdl-textfield__label" for="fightPlaylist">link to fight playlist</label></div>'
+    +'</div>';
+  showDialog({
+    title: 'Settings',
+    text: input,
+    negative: {
+      title: 'Cancel'
+    },
+    positive: {
+      title: 'Save',
+      onClick: function() {
+        var settings = {'shuffle': $('#shuffleSwitch').prop("checked")};
+        player.setSettings(settings);
+      }
+    },
+    cancelable: false,
+  });
+}
+
+function openPlaylistDialog(){
+  var input = '<div>'
+    +'<div class="mdl-textfield mdl-js-textfield"><input id="link" class="mdl-textfield__input" type="text"> <label class="mdl-textfield__label" for="link">Content</label></div>'
+    +'<div class="mdl-textfield mdl-js-textfield"><input id="name" class="mdl-textfield__input" type="text"> <label class="mdl-textfield__label" for="name">Name</label></div>'
+    +'</div>';
+  showDialog({
+    title: 'add Playlist',
+    text: input,
+    negative: {
+      title: 'Cancel'
+    },
+    positive: {
+      title: 'add',
+      onClick: function() {
+        var link = $("#link").val();
+        var name = $("#name").val();
+        addPlaylist(link, name);
+      }
+    },
+    cancelable: false,
+  });
+}
 
 
 function addPlaylist(link, name, color){
@@ -171,20 +236,9 @@ function addPlaylist(link, name, color){
     +'<div class="playbutton mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"><i class="material-icons">play_arrow</i></div>'
     +'</div>');
   card.find(".playbutton").on("click", function(){
-    if(player.active == undefined){
-      player.play(key);
-      $(this).addClass("mdl-button--accent");
-    }else{
-      player.pause(player.active);
-      $(".playbutton").removeClass("mdl-button--accent");
-      if(player.active != key){
-        player.play(key);
-        $(this).addClass("mdl-button--accent");
-      }else{
-        player.active = undefined;
-      }
-    }
+    player.play(key);
   });
   player.data[key].object = card.find("iframe");
+  player.data[key].button = card.find(".playbutton");
   $("#grid").append(card);
 }
