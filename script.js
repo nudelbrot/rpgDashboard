@@ -36,15 +36,16 @@ class Player{
       if(this.active == this.fightID){
         this.pause(this.fightID);
         this.pause(this.previous);
-        return;
-      }
-      if(this.active == id){
-        this.pause(id);
       }else{
-        this.data[id].button.addClass("mdl-button--accent");
-        this.pause(this.active);
-        this.active = id;
-        this.data[id].player.play(id);
+        if(this.active == id){
+          this.pause(id);
+          this.previous = undefined;
+        }else{
+          this.data[id].button.addClass("mdl-button--accent");
+          this.pause(this.active);
+          this.active = id;
+          this.data[id].player.play(id);
+        }
       }
     }
   }
@@ -66,11 +67,11 @@ class Player{
     if(this.fightID != this.active){
       this.pause(this.active, false);
       this.play(this.fightID);
-      this.data[this.fightID].button.addClass("mdl-button--colored");
+      this.data[this.fightID].button.addClass("mdl-button--accent");
     }else{
       this.pause(this.fightID);
       this.play(this.previous);
-      this.data[this.fightID].button.removeClass("mdl-button--colored");
+      this.data[this.fightID].button.removeClass("mdl-button--accent");
     }
   }
 
@@ -160,11 +161,11 @@ $(function(){
   $("#openSettings").on("click", function(){openSettingsDialog();});
   $("#addPlaylist").on("click", openPlaylistDialog);
 
-    $.getJSON("init.json", function(data){
-      Object.keys(data).forEach(function(a){
-        addPlaylist(data[a], a);
-      });
+  $.getJSON("init.json", function(data){
+    Object.keys(data).forEach(function(a){
+      addPlaylist(data[a], a);
     });
+  });
 
 });
 
@@ -228,12 +229,12 @@ function addPlaylist(link, name, color){
     console.debug("soundcloud");
   }
 
-  var card = $('<div class="mdl-card mdl-color--grey-000 mdl-shadow--2dp mdl-cell mdl-cell--2-col mdl-cell--2-col-tablet mdl-cell--2-col-desktop"></div>');
+  var card = $('<div class="mdl-card mdl-color--grey-000 mdl-shadow--2dp mdl-cell mdl-cell--2-col mdl-cell--2-col-tablet mdl-cell--3-col-desktop"></div>');
   card.append(correctedLink);
   card.append('<div class="mdl-card__title mdl-card--expand">'
     +'<h4>'+ name +'</h4>'
     +'</div>'
-    +'<div class="playbutton mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"><i class="material-icons">play_arrow</i></div>'
+    +'<div class="mdl-card__actions mdl-card--border"><div class="playbutton mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"><i class="material-icons">play_arrow</i></div></div>'
     +'</div>');
   card.find(".playbutton").on("click", function(){
     player.play(key);
