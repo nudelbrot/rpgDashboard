@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <title>Playlist Soundboard</title>
+    <title>Playlist Dashboard</title>
 
     <!-- Add to homescreen for Chrome on Android -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -42,6 +42,13 @@
   font-size: 14px;
   font-weight: 500;
 }
+.taglist{
+  position: absolute;
+  bottom: 48px;
+  right: 8px;
+}
+.taglist>.mdl-chip{
+}
     </style>
   </head>
   <body>
@@ -70,10 +77,13 @@
       </main>
     </div>
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="bower_components/material-design-lite/material.min.js"></script>
+    <script src="bower_components/material-design-lite/material.js"></script>
     <script src="bower_components/mdl-jquery-modal-dialog/mdl-jquery-modal-dialog.js"></script>
     <script src="https://w.soundcloud.com/player/api.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
+    <script type="text/javascript" src="Serializable.class.js"></script>
+    <script type="text/javascript" src="Track.class.js"></script>
+    <script type="text/javascript" src="Player.class.js"></script>
     <script type="text/javascript" src="script.js"></script>
   </body>
 </html>
