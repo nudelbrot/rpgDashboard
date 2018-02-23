@@ -4,8 +4,8 @@ class UIController {
   }
   setupClickEvents(){
     self = this;
-    $("#loadJSON").on("click", function(){window.system.player.load()});
-    $("#saveJSON").on("click", function(){window.system.player.save()});
+    $("#loadJSON").on("click", function(){window.system.importBackup()});
+    $("#saveJSON").on("click", function(){window.system.exportBackup()});
     $("#fightButton").on("click", function(){window.system.player.fight();});
     $("#openSettings").on("click", function(){self.openSettingsDialog();});
     $("#addPlaylist").on("click", self.openPlaylistDialog);
@@ -83,10 +83,8 @@ class System extends Serializable{
   serialize(){
     var config = this.player.config;
     var tracks={};
-    Object.keys(this.player.data).forEach(function(a){
-      if(a>0){
-        tracks[this.player.data[a].name] = this.player.data[a].link;
-      }
+    Object.keys(this.player.data).filter(a=> a > 0).forEach(function(a){
+      tracks[this.player.data[a].name] = this.player.data[a].link;
     }.bind(this));
     return JSON.stringify({"config": config, "tracks": tracks});
   }
@@ -98,6 +96,46 @@ class System extends Serializable{
       this.addPlaylist(data.tracks[a], a);
     }.bind(this));
   }
+
+  exportBackup(){
+    var a = document.createElement("a");
+    var file = new Blob([this.serialize()], {type: "application/json"});
+    a.href = URL.createObjectURL(file);
+    a.download = "playlists.json";
+    a.click();
+  }
+
+  importBackup(){
+    var finput;
+    if (window.File && window.FileReader && window.FileList && window.Blob) {
+      finput = $('<input type="file" name="files" title="Load JSON" />');
+      finput.on("change", function (a, b) {
+        var f, reader;
+        f = a.target.files[0];
+        if (f.type.match('application/json') || true) {
+          reader = new FileReader();
+          reader.onload = function (file) {
+            var json, parsed;
+            json = file.target.result;
+            try {
+              window.system.deserialize(json);
+              window.system.saveToLocalStorage();
+            } catch (error) {
+              alert("parsing error: " + error);
+            }
+          };
+          return reader.readAsText(f);
+        } else {
+          alert("a JSON file is required");
+        }
+      });
+      return finput.click();
+    } else {
+      alert('The File APIs are not fully supported in this browser.');
+    }
+  }
+
+
   
   removePlaylist(key, card){
     delete this.player.data[key];
