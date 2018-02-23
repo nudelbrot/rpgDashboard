@@ -112,51 +112,6 @@ class Player{
       this.data[this.fightID].button.addClass("mdl-button--accent");
     }
   }
-
-  save(){
-    var tmp={};
-    Object.keys(this.data).forEach(function(a){
-      tmp[this.data[a].name] = this.data[a].link;
-    }.bind(this));
-    var a = document.createElement("a");
-    var file = new Blob([JSON.stringify(tmp)], {type: "application/json"});
-    a.href = URL.createObjectURL(file);
-    a.download = "playlists.json";
-    a.click();
-  }
-
-  load(){
-    var finput;
-    if (window.File && window.FileReader && window.FileList && window.Blob) {
-      finput = $('<input type="file" name="files" title="Load JSON" />');
-      finput.on("change", function (a, b) {
-        var f, reader;
-        f = a.target.files[0];
-        if (f.type.match('application/json') || true) {
-          reader = new FileReader();
-          reader.onload = function (file) {
-            var json, parsed;
-            json = file.target.result;
-            try {
-              parsed = JSON.parse(json);
-              Object.keys(parsed).forEach(function(a){
-                window.system.addPlaylist(parsed[a], a);
-              });
-              saveLocal();
-            } catch (error) {
-              alert("parsing error: " + error);
-            }
-          };
-          return reader.readAsText(f);
-        } else {
-          alert("a JSON file is required");
-        }
-      });
-      return finput.click();
-    } else {
-      alert('The File APIs are not fully supported in this browser.');
-    }
-  }
 }
 
 class SCPlayer extends Player{
