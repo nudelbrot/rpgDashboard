@@ -14,5 +14,5 @@ gulp.task("test", () =>
 gulp.task("protoc", () => {
   gulp.src("proto/*.proto")
     .pipe(gulpprotobuf())
-    .pipe(gulp.dest("out/"));
+    .pipe(gulp.dest("build/"));
 });
