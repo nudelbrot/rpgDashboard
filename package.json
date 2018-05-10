@@ -1,0 +1,31 @@
+{
+  "name": "rpgdashboard",
+  "version": "1.0.0",
+  "description": "lorem Ipsum",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nudelbrot/rpgDashboard.git"
+  },
+  "author": "",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/nudelbrot/rpgDashboard/issues"
+  },
+  "homepage": "https://github.com/nudelbrot/rpgDashboard#readme",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "gulp": "^3.9.1",
+    "gulp-mocha": "^5.0.0",
+    "gulp-protobufjs": "^1.3.0",
+    "gulp-util": "^3.0.8",
+    "mocha": "^5.1.1",
+    "protobufjs": "^6.8.6"
+  }
+}

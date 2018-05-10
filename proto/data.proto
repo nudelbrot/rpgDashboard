@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+message Vendor {
+  string name = 1;
+}
+
+message Track {
+  string url = 1;
+  Vendor vendor = 2;
+  string title = 3;
+}
+
+message Playlist {
+  repeated Track tracks = 1;
+  string name = 2;
+}
